@@ -1,8 +1,11 @@
 import express from "express"
 import db from "./database/database.js"
+import cors from "cors"
 
 const app = express()
 const port = 3000
+
+app.use(cors())
 
 app.get("/login", (req, res) => {
 	const sql = "SELECT * FROM user"
