@@ -6,24 +6,31 @@ const app = express()
 const port = 3000
 
 app.use(cors())
+app.use(express.json())
 
-app.get("/login", (req, res) => {
-	const sql = "SELECT * FROM user"
-	db.query(sql, (err, result) => {
+app.post("/login", (req, res) => {
+	const {email, password} = req.body
+
+	const sql = "SELECT * FROM user WHERE email = ? AND pw = ?"
+	db.query(sql, [email, password], (err, result) => {
 		if (err) {
 			res.status(500).json({
 				message: "Error",
-				preview: "Database Failed",
-				data: "null",
+				preview: "Database query failed",
+				data: null,
+			})
+		} else if (result.length > 0) {
+			res.status(200).json({
+				message: "Success",
+				preview: "Login successful",
+				data: result[0],
 			})
 		} else {
-			res.status(200).json([
-				{
-					message: "Success",
-					preview: "User list retrieved successfully",
-					data: result,
-				},
-			])
+			res.status(401).json({
+				message: "Failed",
+				preview: "Invalid email or password",
+				data: null,
+			})
 		}
 	})
 })
